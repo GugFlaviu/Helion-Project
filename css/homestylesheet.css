@@ -1,0 +1,10 @@
+.title-container{
+    background-color:rgba(0, 0, 0, 0.032); 
+    padding-top: 4rem;
+    padding-bottom: 4rem;
+    margin-top: 1rem;
+}
+
+.text-title-container{
+    margin-left:10px;
+}
