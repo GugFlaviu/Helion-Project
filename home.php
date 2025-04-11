@@ -27,7 +27,8 @@
             <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="#">upgrade your browser</a> to improve your experience.</p>
         <![endif]-->
     <?php
-    include "./templates/navbar.php";
+    include "templates/navbar.php";
+    include "./config/sqlconnect.php";
     ?>
     <section class="container w-50">
 
