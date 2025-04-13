@@ -12,10 +12,10 @@
     width: 33.3333% !important;
 }
 .scroll-box {
-    max-height: 300px;
-    overflow-y: auto;
+    
+    height:250px;
     border: 1px solid #ccc;
     border-radius: 5px;
-    padding: 0.5rem;
-  }
+
+}
   
