@@ -1,6 +1,9 @@
 <?php
-$invoice_number = 371232;
+
 include "./config/sqlconnect.php";
+
+$invoice_number = 371232;
+
 ?>
 
 <!DOCTYPE html>
@@ -33,7 +36,7 @@ include "./config/sqlconnect.php";
 
 
     ?>
-    <section class="container w-50 align-items-start">
+    <form class="container w-50 align-items-start">
 
         <div class="container title-container ">
             <h1 class="text-title-container">FISA HELION SECURITY</h1>
@@ -152,9 +155,9 @@ include "./config/sqlconnect.php";
                         </select>
                     </div>
                     <div class="col-md-6 mb-3">
-                        <label for="formFile" class="form-label">Ataseaza poza</label>
+                        <label for="poza" class="form-label">Ataseaza poza</label>
                         <input class="form-control mb-2" type="file" id="formFile">
-                        <button class="btn btn-primary" id="clearFile">Sterge poza</button>
+                        <button class="btn btn-primary" id="stergePoza">Sterge poza</button>
                     </div>
 
                 </div>
@@ -270,16 +273,9 @@ include "./config/sqlconnect.php";
             </div>
             <div class="w-33 gap-2">
                 <h3>Reprezentat:</h3>
-                <div class="" style="height: 250px;">
+                <canvas id="semnatura-reprezentant" height="200" style="border:1px solid #ccc;"></canvas><br>
+                <button type="button" onclick="clearPadReprezentant()">Șterge</button>
 
-
-                    <input class='form-check-input' type='checkbox'>
-                    <div class='form-check-label '>
-                        <strong>Alta Persoana</strong><br>
-
-                    </div>
-                    <hr>
-                </div>
             </div>
 
         </div>
@@ -331,20 +327,97 @@ include "./config/sqlconnect.php";
 
 
         </div>
+        <div class="container d-flex justify-content-start gap-3">
+            <div class="w-100 h-25 ">
+                <h3>Semnatura:</h3>
+                <div class="container">
+                    <canvas id="semnatura-client" width="500" height="200" style="border:1px solid #ccc;"></canvas><br>
+                    <div class="container">
 
+
+                    </div>
+                    <button type="button" onclick="clearPad()">Șterge</button>
+                    <p>
+                        Prin semnarea prezentei Fise de Service Clientul, prin reprezentantul sau, accepta lucrarile,
+                        confirma executarea acestora si accepta
+                        receptia lor intocmai.
+
+                    </p>
+
+                </div>
+
+            </div>
+
+
+        </div>
+        <div class="container d-flex justify-content-start gap-3">
+            <div class="w-100 h-25 ">
+                <h3>Observatii din partea persoanei de contact
+                    :</h3>
+                <div class="overflow-auto  " style="height: 150px;">
+                    <textarea class="form-control" aria-label="With textarea"
+                        placeholder="Exemplu: Inginerul Helion a intervenit prompt"></textarea>
+                </div>
+
+            </div>
+
+
+        </div>
+        <div class="container d-flex justify-content-start gap-3">
+            <div class="w-100 h-25 ">
+                <h3>Actiuni:</h3>
+                <div class="text-left my-4">
+                    <button class="btn btn-success mb-2">Finalizează și trimite fișa</button><br>
+                    <button class="btn btn-danger">Resetează</button>
+                </div>
+
+            </div>
 
 
         </div>
 
-    </section>
 
-    <script>
-        document.getElementById("clearFile").addEventListener("click", function (e) {
-            e.preventDefault(); // Prevent form submission if inside a form
-            document.getElementById("formFile").value = "";
-        });
+
+
+
+    </form>
+
+    <script src=" https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js">
     </script>
-    <footer style="height:100px;"></footer>
+    <script>
+        document.getElementById("stergePoza").addEventListener("click", function (e) {
+            e.preventDefault();
+            document.getElementById("poza").value = "";
+        });
+        //semnatura pentru reprezentant
+        const canvas_reprezentant = document.getElementById('semnatura-reprezentant');
+        const signaturePad_Reprezentant = new SignaturePad(canvas_reprezentant, {
+            penColor: 'darkblue'
+        });
+
+        function clearPadReprezentant() {
+            signaturePad_Reprezentant.clear();
+        }
+        //semnatura client
+        const canvas_client = document.getElementById('semnatura-client');
+        const signaturePad_Client = new SignaturePad(canvas_client, {
+            penColor: 'darkblue'
+        });
+
+        function clearPad() {
+            signaturePad_Client.clear();
+        }
+
+    </script>
+
 </body>
+
+<footer class="bg-light text-center py-3" style="border-top: 1px #ccc solid;">
+
+    <small>
+        Soluție oferită de
+        <a href="https://deforce.eu/" target="_blank">DeForce Tehnologic SRL</a>
+    </small>
+</footer>
 
 </html>

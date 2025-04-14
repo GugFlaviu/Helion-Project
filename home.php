@@ -36,6 +36,43 @@
             <h1 class="text-title-container">Fise Helion Security</h1>
             <h5 class="text-title-container">Perioada : 2025-04-09</h5>
         </div>
+        <div class="row g-2 mb-4 year-buttons">
+
+            <div class="col-6 col-md-2">
+                <div class="dropdown w-100">
+                    <button class="btn btn-primary dropdown-toggle w-100" type="button" data-bs-toggle="dropdown">
+                        Selectează
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="#">Opțiune 1</a></li>
+                        <li><a class="dropdown-item" href="#">Opțiune 2</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-6 col-md-2"><button class="btn btn-primary w-100">2025</button></div>
+            <div class="col-6 col-md-2"><button class="btn btn-primary w-100">2024</button></div>
+            <div class="col-6 col-md-2"><button class="btn btn-primary w-100">2023</button></div>
+            <div class="col-6 col-md-2"><button class="btn btn-primary w-100">2022</button></div>
+            <div class="col-6 col-md-2"><button class="btn btn-secondary w-100">Tot</button></div>
+            <br>
+            <div class="d-flex flex-wrap justify-content-between mb-3" style="border: 1px solid #ccc;">
+                <div style="margin: 10px;">
+                    Show
+                    <select class=" form-select d-inline w-auto mx-1" style="width: auto;">
+                        <option>10</option>
+                        <option>25</option>
+                        <option>50</option>
+                        <option>100</option>
+                    </select>
+                    entries
+                </div>
+
+                <div style="margin: 10px;">
+                    Search:
+                    <input type="text" class="form-control d-inline w-auto ms-2" style="width: 160px;">
+                </div>
+            </div>
+        </div>
     </section>
 
 
