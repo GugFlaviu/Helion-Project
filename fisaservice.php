@@ -1,6 +1,37 @@
 <?php
-$invoice_number = 371232;
+
 include "./config/sqlconnect.php";
+
+$invoice_number = 371232;
+
+function getUserIP()
+{
+    if (!empty($_SERVER['HTTP_CLIENT_IP']))
+        return $_SERVER['HTTP_CLIENT_IP'];
+    if (!empty($_SERVER['HTTP_X_FORWARDED_FOR']))
+        return explode(',', $_SERVER['HTTP_X_FORWARDED_FOR'])[0];
+    return $_SERVER['REMOTE_ADDR'];
+}
+
+$ip = getUserIP();
+
+
+$apiKey = "acb7be2b776e4def9c31aa84248bbe50"; // Replace with your actual key
+$url = "https://api.geoapify.com/v1/ipinfo?apiKey=$apiKey";
+
+$response = file_get_contents($url);
+$data = json_decode($response, true);
+$lat = $data['location']['latitude'] ?? null;
+$lon = $data['location']['longitude'] ?? null;
+//echo "Location saved: ($lat, $lon)";
+
+//$googleMapsUrl = "https://www.google.com/maps?q=$lat,$lon";
+//echo "Location saved: <a href='$googleMapsUrl' target='_blank'>($lat, $lon)</a>";
+
+
+
+
+
 ?>
 
 <!DOCTYPE html>
@@ -28,12 +59,10 @@ include "./config/sqlconnect.php";
             <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="#">upgrade your browser</a> to improve your experience.</p>
         <![endif]-->
     <?php
-    include "./config/sqlconnect.php";
+
     include "./templates/navbar.php";
-
-
     ?>
-    <section class="container w-50 align-items-start">
+    <form id="myForm" class="container w-50 align-items-start" method="POST" action="save_form.php">
 
         <div class="container title-container ">
             <h1 class="text-title-container">FISA HELION SECURITY</h1>
@@ -55,7 +84,7 @@ include "./config/sqlconnect.php";
                     $sql = "SELECT * FROM detalii_firma";
                     $result = $connect->query($sql);
                     while ($row = $result->fetch_assoc()) {
-                        echo "<input class='form-check-input' type='checkbox'>
+                        echo "<input class='form-check-input' type='checkbox' name='firma[]' value='{$row['id']}'>
                     <div class='form-check-label '>
                         <strong>$row[nume_firma]</strong><br>
                         <p>CUI: $row[cui]</p>
@@ -66,6 +95,7 @@ include "./config/sqlconnect.php";
 
                 </div>
             </div>
+
             <div class="w-33 gap-2 pb-4 ">
                 <h3>Punct de lucru:</h3>
                 <input type="text" class="form-control mb-2" placeholder="Cauta punct de lucru ...">
@@ -75,7 +105,7 @@ include "./config/sqlconnect.php";
                     $sql = "SELECT * FROM punct_lucru";
                     $result = $connect->query($sql);
                     while ($row = $result->fetch_assoc()) {
-                        echo "<input class='form-check-input' type='checkbox'>
+                        echo "<input class='form-check-input' type='checkbox' name='punct_lucru[]' value='{$row['id']}'>
                     <div class='form-check-label '>
                         <strong>$row[nume]</strong><br>
                         <p>ZONA: $row[zona]</p>
@@ -96,7 +126,7 @@ include "./config/sqlconnect.php";
                     $sql = "SELECT * FROM reprezentant";
                     $result = $connect->query($sql);
                     while ($row = $result->fetch_assoc()) {
-                        echo "<input class='form-check-input' type='checkbox'>
+                        echo "<input class='form-check-input' type='checkbox' name='reprezentant[]' value='{$row['id']}'>
                                 <div class='form-check-label '>
                                     <strong>$row[nume]</strong><br>
                                     <p>Telefon: 0$row[telefon]</p>
@@ -129,7 +159,7 @@ include "./config/sqlconnect.php";
                     $sql = "SELECT * FROM tip_sistem";
                     $result = $connect->query($sql);
                     while ($row = $result->fetch_assoc()) {
-                        echo "<input class='form-check-input' type='checkbox'>
+                        echo "<input class='form-check-input' type='checkbox' name='tip_sistem[]' value='{$row['id']}'>
                     <div class='form-check-label '>
                         <strong>$row[nume]</strong><br>
                       
@@ -145,16 +175,16 @@ include "./config/sqlconnect.php";
                     <div class="col-md-6 mb-3">
                         <h3>Punctul detine jurnal?</h3>
 
-                        <select class="form-select w-50" id="jurnal">
+                        <select class="form-select w-50" id="jurnal" name="jurnal" required>
                             <option>Alege</option>
                             <option>Da</option>
                             <option>Nu</option>
                         </select>
                     </div>
                     <div class="col-md-6 mb-3">
-                        <label for="formFile" class="form-label">Ataseaza poza</label>
+                        <label for="poza" class="form-label">Ataseaza poza</label>
                         <input class="form-control mb-2" type="file" id="formFile">
-                        <button class="btn btn-primary" id="clearFile">Sterge poza</button>
+                        <button class="btn btn-primary" id="stergePoza">Sterge poza</button>
                     </div>
 
                 </div>
@@ -168,25 +198,19 @@ include "./config/sqlconnect.php";
         <br>
         <div class="container d-flex justify-content-start gap-3">
             <div class="w-33 h-25  ">
-                <h3>Defect semnalat
-                    :</h3>
-
-
+                <h3>Defect semnalat:</h3>
                 <div class="overflow-auto  " style="height: 150px;">
 
-                    <textarea class="form-control" aria-label="With textarea"></textarea>
+                    <textarea class="form-control" aria-label="With textarea" name="defect_semnalat"
+                        placeholder="Scrie defectul semnalat aici..." required></textarea>
 
                 </div>
             </div>
             <div class="w-33 h-25  ">
-                <h3>Contestatie
+                <h3>Constatare
                     :</h3>
-
-
                 <div class="overflow-auto  " style="height: 150px;">
-
-                    <textarea class="form-control" aria-label="With textarea"></textarea>
-
+                    <textarea class="form-control" aria-label="With textarea" name="constatare" required></textarea>
                 </div>
             </div>
 
@@ -200,7 +224,7 @@ include "./config/sqlconnect.php";
                     :</h3>
                 <div class="input-group ">
                     <span class="input-group-text w-50">Preluat in service</span>
-                    <select class="form-select w-50" id="jurnal">
+                    <select class="form-select w-50" id="jurnal-service" name="preluat_service" required>
                         <option>Alege</option>
                         <option>Nu</option>
                         <option>Da</option>
@@ -209,7 +233,7 @@ include "./config/sqlconnect.php";
                 </div>
                 <div class="input-group ">
                     <span class="input-group-text w-50">Aparat reparat</span>
-                    <select class="form-select w-50" id="jurnal">
+                    <select class="form-select w-50" id="jurnal-reparat" name="aparat_reparat" required>
                         <option>Alege</option>
                         <option>Nu</option>
                         <option>Da</option>
@@ -224,13 +248,13 @@ include "./config/sqlconnect.php";
             <div class="w-33 h-25  ">
                 <h3>OPERAȚII:</h3>
                 <div class="overflow-auto  " style="height: 150px;">
-                    <textarea class="form-control" aria-label="With textarea"></textarea>
+                    <textarea class="form-control" aria-label="With textarea" required name="operatii"></textarea>
                 </div>
             </div>
             <div class="w-33 h-25  ">
                 <h3>Consum:</h3>
                 <div class="overflow-auto  " style="height: 150px;">
-                    <textarea class="form-control" aria-label="With textarea"></textarea>
+                    <textarea class="form-control" aria-label="With textarea" required name="consum"></textarea>
                 </div>
             </div>
 
@@ -242,7 +266,7 @@ include "./config/sqlconnect.php";
                 <h3>Recomandari
                 </h3>
                 <div class="overflow-auto  " style="height: 150px;">
-                    <textarea class="form-control" aria-label="With textarea"></textarea>
+                    <textarea class="form-control" aria-label="With textarea" required name="recomandari"></textarea>
                 </div>
 
 
@@ -256,7 +280,7 @@ include "./config/sqlconnect.php";
                     $sql = "SELECT * FROM inginer";
                     $result = $connect->query($sql);
                     while ($row = $result->fetch_assoc()) {
-                        echo "<input class='form-check-input' type='checkbox'>
+                        echo "<input class='form-check-input' type='checkbox' name='inginer[]' value='{$row['id']}'> 
                     <div class='form-check-label '>
                         <strong>$row[nume]</strong><br>
                         <p>Functie: $row[functie]</p>
@@ -270,16 +294,11 @@ include "./config/sqlconnect.php";
             </div>
             <div class="w-33 gap-2">
                 <h3>Reprezentat:</h3>
-                <div class="" style="height: 250px;">
+                <canvas id="semnatura-reprezentant" width="300" height="200"
+                    style="border:1px solid #ccc;"></canvas><br>
+                <input type="hidden" name="semnatura_reprezentant" id="semnatura_reprezentant_input">
+                <button type="button" onclick="clearPadReprezentant()">Șterge</button>
 
-
-                    <input class='form-check-input' type='checkbox'>
-                    <div class='form-check-label '>
-                        <strong>Alta Persoana</strong><br>
-
-                    </div>
-                    <hr>
-                </div>
             </div>
 
         </div>
@@ -289,7 +308,7 @@ include "./config/sqlconnect.php";
             <div class="w-50 h-25 ">
                 <h3>Data Predarii:</h3>
                 <div class="overflow-auto">
-                    <input type="date" class="form-control">
+                    <input type="date" class="form-control" name="data_predarii" required>
                     <div class="input-group flex-nowrap mt-3 m-0 ">
                         <p class="input-group-text w-100 m-0  " style="color:gray;">
                             Timp transport (spre și de la obiectiv)
@@ -297,7 +316,8 @@ include "./config/sqlconnect.php";
                     </div>
 
                     <div class="input-group mb-3 m-0 ">
-                        <input type="text" class="form-control m-0  " placeholder="Ex:20">
+                        <input type="text" class="form-control m-0  " placeholder="Ex:20" name="timp_transport"
+                            required>
                         <span class="input-group-text w-50 m-0  ">min</span>
                     </div>
                 </div>
@@ -310,7 +330,7 @@ include "./config/sqlconnect.php";
                     </div>
 
                     <div class="input-group mb-3 m-0 ">
-                        <input type="text" class="form-control m-0  " placeholder="Ex:110">
+                        <input type="text" class="form-control m-0  " placeholder="Ex:110" name="km_parcursi" required>
                         <span class="input-group-text w-50 m-0  ">km</span>
                     </div>
                 </div>
@@ -323,7 +343,7 @@ include "./config/sqlconnect.php";
                     </div>
 
                     <div class="input-group mb-3 m-0 ">
-                        <input type="text" class="form-control m-0  " placeholder="Ex:10">
+                        <input type="text" class="form-control m-0  " placeholder="Ex:10" name="timp_manopera" required>
                         <span class="input-group-text w-50 m-0  ">min</span>
                     </div>
                 </div>
@@ -331,20 +351,116 @@ include "./config/sqlconnect.php";
 
 
         </div>
+        <div class="container d-flex justify-content-start gap-3">
+            <div class="w-100 h-25 ">
+                <h3>Semnatura:</h3>
+                <div class="container">
+                    <canvas id="semnatura-client" width="500" height="200" style="border:1px solid #ccc;"></canvas><br>
+                    <input type="hidden" name="semnatura_client" id="semnatura_client_input">
+                    <div class="container">
 
+
+                    </div>
+                    <button type="button" onclick="clearPad()">Șterge</button>
+                    <p>
+                        Prin semnarea prezentei Fise de Service Clientul, prin reprezentantul sau, accepta lucrarile,
+                        confirma executarea acestora si accepta
+                        receptia lor intocmai.
+
+                    </p>
+
+                </div>
+
+            </div>
 
 
         </div>
+        <div class="container d-flex justify-content-start gap-3">
+            <div class="w-100 h-25 ">
+                <h3>Observatii din partea persoanei de contact
+                    :</h3>
+                <div class="overflow-auto  " style="height: 150px;">
+                    <textarea class="form-control" aria-label="With textarea"
+                        placeholder="Exemplu: Inginerul Helion a intervenit prompt" required
+                        name="observatii"></textarea>
+                </div>
 
-    </section>
+            </div>
 
+
+        </div>
+        <div class="container d-flex justify-content-start gap-3">
+            <div class="w-100 h-25 ">
+                <h3>Actiuni:</h3>
+                <div class="text-left my-4">
+                    <button class="btn btn-success mb-2" type="submit">Finalizează și trimite fișa</button><br>
+                    <button class="btn btn-danger">Resetează</button>
+                </div>
+
+            </div>
+
+
+        </div>
+        <input type="hidden" name="gps_lat" value="<?php echo $lat; ?>">
+        <input type="hidden" name="gps_lng" value="<?php echo $lon; ?>">
+
+
+
+
+    </form>
+
+    <script src=" https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js">
+    </script>
     <script>
-        document.getElementById("clearFile").addEventListener("click", function (e) {
-            e.preventDefault(); // Prevent form submission if inside a form
-            document.getElementById("formFile").value = "";
+        document.getElementById("stergePoza").addEventListener("click", function (e) {
+            e.preventDefault();
+            document.getElementById("poza").value = "";
+        });
+        //semnatura pentru reprezentant
+        const canvas_reprezentant = document.getElementById('semnatura-reprezentant');
+        const signaturePad_Reprezentant = new SignaturePad(canvas_reprezentant, {
+            penColor: 'darkblue'
+        });
+
+        function clearPadReprezentant() {
+            signaturePad_Reprezentant.clear();
+        }
+        //semnatura client
+        const canvas_client = document.getElementById('semnatura-client');
+        const signaturePad_Client = new SignaturePad(canvas_client, {
+            penColor: 'darkblue'
+        });
+
+        function clearPad() {
+            signaturePad_Client.clear();
+        }
+        const form = document.getElementById('myForm');
+        const canvasClient = document.getElementById('semnatura-client');
+        const canvasReprezentant = document.getElementById('semnatura-reprezentant');
+
+
+
+        form.addEventListener('submit', function (e) {
+            if (!signaturePad_Client.isEmpty()) {
+                const dataURL_Client = signaturePad_Client.toDataURL();
+                document.getElementById('semnatura_client_input').value = dataURL_Client;
+            }
+
+            if (!signaturePad_Reprezentant.isEmpty()) {
+                const dataURL_Reprezentant = signaturePad_Reprezentant.toDataURL();
+                document.getElementById('semnatura_reprezentant_input').value = dataURL_Reprezentant;
+            }
         });
     </script>
-    <footer style="height:100px;"></footer>
+
 </body>
+
+<footer class="bg-light text-center py-3" style="border-top: 1px #ccc solid;">
+
+    <small>
+        Soluție oferită de
+        <a href="https://deforce.eu/" target="_blank">DeForce Tehnologic SRL</a>
+    </small>
+</footer>
 
 </html>
