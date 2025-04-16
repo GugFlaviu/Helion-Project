@@ -302,12 +302,12 @@ if (isset($_GET['id'])) {
             $mail->isSMTP();
             $mail->Host = 'smtp.gmail.com';
             $mail->SMTPAuth = true;
-            $mail->Username = 'gfsoft03@gmail.com';
+            $mail->Username = '';
             $mail->Password = 'your password';
             $mail->SMTPSecure = 'tls';
             $mail->Port = 587;
 
-            $mail->setFrom('gugflaviu@gmail.com', 'Flaviu');
+            $mail->setFrom('', '');
             $mail->addAddress('email destinatar', 'Destinatar'); //schimba emailul in functie de destinatar
             $mail->Subject = 'Fișa de intervenție #' . $row['id'];
             $mail->Body = 'Salut! Atașat găsești fișa de intervenție.';
